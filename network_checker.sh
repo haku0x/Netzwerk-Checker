@@ -1,5 +1,5 @@
 #!/bin/bash
-# 🌐 Netzwerk-Checker v2.2
+# 🌐 Netzwerk-Checker v3.0
 # Autor: haku0x | Lizenz: MIT
 
 set -euo pipefail
@@ -18,11 +18,14 @@ function show_menu() {
   echo -e "\033[1;93m[1]\033[0m 🌍 Öffentliche IP-Adresse anzeigen"
   echo -e "\033[1;93m[2]\033[0m 🖥️  Lokale IPs & Netzwerkschnittstellen"
   echo -e "\033[1;93m[3]\033[0m 📡 DNS-Konfiguration anzeigen"
-  echo -e "\033[1;93m[4]\033[0m 📶 Internet Speedtest (fast.com)"
+  echo -e "\033[1;93m[4]\033[0m 📶 Internet Speedtest durchführen"
   echo -e "\033[1;93m[5]\033[0m 📤 Ping-Test zu google.de"
   echo -e "\033[1;93m[6]\033[0m 🔁 Alle Informationen auf einmal anzeigen"
-  echo -e "\033[1;93m[7]\033[0m 🚪 Beenden"
-  echo -ne "\n🔢 \033[1mAuswahl eingeben [1-7]: \033[0m"
+  echo -e "\033[1;93m[7]\033[0m 📡 Aktive Verbindungen anzeigen"
+  echo -e "\033[1;93m[8]\033[0m 🛰 TraceRoute zu einer Domain"
+  echo -e "\033[1;93m[9]\033[0m 🔒 Offene Ports anzeigen (nmap)"
+  echo -e "\033[1;93m[10]\033[0m 🚪 Beenden"
+  echo -ne "\n🔢 \033[1mAuswahl eingeben [1-10]: \033[0m"
   read -r CHOICE
   case $CHOICE in
     1) public_ip;;
@@ -31,7 +34,10 @@ function show_menu() {
     4) run_speedtest;;
     5) ping_test;;
     6) show_all;;
-    7) echo -e "\n👋 \033[1;92mBeende Skript...\033[0m"; exit 0;;
+    7) active_connections;;
+    8) run_traceroute;;
+    9) scan_ports;;
+    10) echo -e "\n👋 \033[1;92mBeende Skript...\033[0m"; exit 0;;
     *) echo -e "\n❗ \033[1;91mUngültige Eingabe. Bitte erneut versuchen.\033[0m"; sleep 1; show_menu;;
   esac
 }
@@ -55,13 +61,12 @@ function dns_info() {
 }
 
 function run_speedtest() {
-  if ! command -v fast &> /dev/null; then
-    echo -e "\n📦 Installiere fast-cli (benötigt npm)..."
-    apt update && apt install -y npm
-    npm install --global fast-cli
+  if ! command -v speedtest &> /dev/null; then
+    echo -e "\n📦 Installiere speedtest-cli..."
+    apt update && apt install -y speedtest-cli
   fi
-  echo -e "\n📊 Führe Speedtest via fast.com durch..."
-  fast || echo "(Speedtest fehlgeschlagen)"
+  echo -e "\n📊 Führe Speedtest durch..."
+  speedtest --simple 2>/dev/null || echo "(Speedtest fehlgeschlagen)"
   back_to_menu
 }
 
@@ -77,7 +82,31 @@ function show_all() {
   dns_info_no_menu
   ping_test_no_menu
   echo -e "\n📊 Speedtest:"
-  fast || echo "(Speedtest fehlgeschlagen)"
+  speedtest --simple || echo "(Speedtest fehlgeschlagen)"
+  back_to_menu
+}
+
+function active_connections() {
+  echo -e "\n📡 Aktive Netzwerkverbindungen (TCP/UDP):"
+  ss -tulnp | grep -v "State" || echo "(Keine Verbindungen gefunden)"
+  back_to_menu
+}
+
+function run_traceroute() {
+  echo -ne "\n🌐 Ziel-Domain eingeben (z. B. google.de): "
+  read -r domain
+  echo -e "\n🚀 TraceRoute zu $domain:"
+  traceroute "$domain" || echo "(Traceroute fehlgeschlagen)"
+  back_to_menu
+}
+
+function scan_ports() {
+  if ! command -v nmap &> /dev/null; then
+    echo -e "\n📦 Installiere nmap..."
+    apt update && apt install -y nmap
+  fi
+  echo -e "\n🔒 Offene Ports auf localhost:"
+  nmap -Pn 127.0.0.1 || echo "(Scan fehlgeschlagen)"
   back_to_menu
 }
 
