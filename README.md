@@ -8,14 +8,14 @@ Ein einfaches Bash-Tool für Debian/Linux zur Anzeige und Analyse von Netzwerkda
 
 - 🌍 Öffentliche IP-Adresse anzeigen
 - 🖥️ Lokale IPs & Netzwerkschnittstellen anzeigen
-- 📡 DNS-Server auslesen
-- 📶 Speedtest (offizielle Ookla CLI)
+- 📡 DNS-Server anzeigen
+- 📶 Speedtest via [fast.com](https://fast.com) (`fast-cli`)
 - 📤 Ping-Test zu google.de
-- 🔁 Alles auf einmal anzeigen (Übersicht)
+- 🔁 Alles auf einmal anzeigen (kompakte Übersicht)
 
 ---
 
-## 🔽 Direkt ausführen (ohne Installation)
+## 🔽 Direkt ausführen (ohne Klonen)
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/haku0x/Netzwerk-Checker/main/network_checker.sh)
