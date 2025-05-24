@@ -1,5 +1,5 @@
 #!/bin/bash
-# 🌐 Netzwerk-Checker v2.0
+# 🌐 Netzwerk-Checker v2.1
 # Autor: haku0x | Lizenz: MIT
 
 set -euo pipefail
@@ -56,11 +56,13 @@ function dns_info() {
 
 function run_speedtest() {
   if ! command -v speedtest &> /dev/null; then
-    echo -e "\n📦 Installiere speedtest-cli..."
-    apt update && apt install -y speedtest-cli
+    echo -e "\n📦 Installiere offizielle Ookla Speedtest-CLI..."
+    apt update && apt install gnupg1 apt-transport-https dirmngr -y
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash
+    apt install speedtest -y
   fi
   echo -e "\n📊 Führe Speedtest durch..."
-  speedtest --simple || echo "(Speedtest fehlgeschlagen)"
+  speedtest || echo "(Speedtest fehlgeschlagen)"
   back_to_menu
 }
 
@@ -76,7 +78,7 @@ function show_all() {
   dns_info_no_menu
   ping_test_no_menu
   echo -e "\n📊 Speedtest:"
-  speedtest --simple || echo "(Speedtest fehlgeschlagen)"
+  speedtest || echo "(Speedtest fehlgeschlagen)"
   back_to_menu
 }
 
