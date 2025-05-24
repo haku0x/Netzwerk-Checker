@@ -1,5 +1,5 @@
 #!/bin/bash
-# 🌐 Netzwerk-Checker v2.1
+# 🌐 Netzwerk-Checker v2.2
 # Autor: haku0x | Lizenz: MIT
 
 set -euo pipefail
@@ -18,7 +18,7 @@ function show_menu() {
   echo -e "\033[1;93m[1]\033[0m 🌍 Öffentliche IP-Adresse anzeigen"
   echo -e "\033[1;93m[2]\033[0m 🖥️  Lokale IPs & Netzwerkschnittstellen"
   echo -e "\033[1;93m[3]\033[0m 📡 DNS-Konfiguration anzeigen"
-  echo -e "\033[1;93m[4]\033[0m 📶 Internet Speedtest durchführen"
+  echo -e "\033[1;93m[4]\033[0m 📶 Internet Speedtest (fast.com)"
   echo -e "\033[1;93m[5]\033[0m 📤 Ping-Test zu google.de"
   echo -e "\033[1;93m[6]\033[0m 🔁 Alle Informationen auf einmal anzeigen"
   echo -e "\033[1;93m[7]\033[0m 🚪 Beenden"
@@ -55,14 +55,13 @@ function dns_info() {
 }
 
 function run_speedtest() {
-  if ! command -v speedtest &> /dev/null; then
-    echo -e "\n📦 Installiere offizielle Ookla Speedtest-CLI..."
-    apt update && apt install gnupg1 apt-transport-https dirmngr -y
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash
-    apt install speedtest -y
+  if ! command -v fast &> /dev/null; then
+    echo -e "\n📦 Installiere fast-cli (benötigt npm)..."
+    apt update && apt install -y npm
+    npm install --global fast-cli
   fi
-  echo -e "\n📊 Führe Speedtest durch..."
-  speedtest || echo "(Speedtest fehlgeschlagen)"
+  echo -e "\n📊 Führe Speedtest via fast.com durch..."
+  fast || echo "(Speedtest fehlgeschlagen)"
   back_to_menu
 }
 
@@ -78,7 +77,7 @@ function show_all() {
   dns_info_no_menu
   ping_test_no_menu
   echo -e "\n📊 Speedtest:"
-  speedtest || echo "(Speedtest fehlgeschlagen)"
+  fast || echo "(Speedtest fehlgeschlagen)"
   back_to_menu
 }
 
